@@ -93,3 +93,5 @@ while game:
     screen.blit(eye1,(snakes[0].x + 3,snakes[0].y + 3.5))
     screen.blit(eye2,(snakes[0].x + 3,snakes[0].y + 1.5))
     pygame.display.update()
+
+    
