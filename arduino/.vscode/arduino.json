@@ -1,0 +1,7 @@
+{
+    "board": "arduino:avr:uno",
+    "port": "COM3",
+    "sketch": "sketch.ino",
+    "output": "build",
+    "programmer": "arduinoisp"
+}
