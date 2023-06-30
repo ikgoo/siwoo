@@ -94,4 +94,4 @@ while game:
     screen.blit(eye2,(snakes[0].x + 3,snakes[0].y + 1.5))
     pygame.display.update()
 
-    
+    # 시우짱
