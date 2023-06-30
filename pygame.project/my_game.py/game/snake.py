@@ -10,10 +10,11 @@ image_path = "E:\siwoo\pygame.project\my_game.py\game/images"
 # invis = 0
 # invis1 = 1
 fors = 0
+font = pygame.font.Font(None, 80)
 snaketurn = []
 class snakebod:
     def __init__(self,x,y,own):
-        self.snakeb = pygame.Surface((10,10))
+        self.snakeb = pygame.Surface((50,50))
         self.snakeb.fill((255,255,255))
         self.snakenum = 0
 
@@ -24,13 +25,13 @@ class snakebod:
 
     def go(self):
         if self.dir == "right":
-            self.x += 5
+            self.x += 50
         if self.dir == "left":
-            self.x -= 5
+            self.x -= 50
         if self.dir == "up":
-             self.y -= 5
+             self.y -= 50
         if self.dir == "down":
-             self.y += 5
+             self.y += 50
         
     
     def update(self):
@@ -40,18 +41,19 @@ class fruit:
     def __init__(self):
         self.point = 0
         self.x = random.randint(0,700)
-        self.y = random.randint(0,700)
-        self.cir = pygame.draw.circle(screen,(255,255,255),(self.x,self.y),2.5)
+        self.y = random.randint(110,700)
+        self.cir = pygame.draw.circle(screen,(255,255,255),(self.x,self.y),25)
         self.hitbox = pygame.Surface((3,3))
-        if self.x % 5 != 0:
+        self.ptext = font.render(str(self.point) + "points.", True, (255, 255, 255))
+        if self.x % 50 != 0:
             for i in range(10):
                 self.x += 1
-                if self.x % 5 == 0:
+                if self.x % 50 == 0:
                     break
-        if self.y % 5 != 0:
+        if self.y % 50 != 0:
             for i in range(10):
                 self.y += 1
-                if self.y % 5 == 0:
+                if self.y % 50 == 0:
                     break
         
     
@@ -88,24 +90,28 @@ class fruit:
     
     def update(self):
         screen.blit(self.hitbox,(self.x - 2.5,self.y-2.5))
-        self.cir = pygame.draw.circle(screen,(255,255,255),(self.x,self.y),2.5)
-        
-        
+        self.cir = pygame.draw.circle(screen,(255,255,255),(self.x,self.y),25)
+        self.ptext = font.render(str(self.point) + "points.", True, (255, 255, 255))
+        screen.blit(self.ptext,(200,50))
         
 
+for i in range(140):
+    
+    pygame.draw.line(screen,(255,255,255) ,(0,0 + i * 5),(700,0 + i * 5),width=1)
+pblock = pygame.Surface((700,10))
 fruit1 = fruit()
 snakes = []
 for s in range(1,3):
-    snakes.append(snakebod(350 - s * 5,350,s))
+    snakes.append(snakebod(350 - s * 50,350,s))
 
-eye1 = pygame.Surface((2,2))
-eye2 = pygame.Surface((2,2))
+eye1 = pygame.Surface((10,10))
+eye2 = pygame.Surface((10,10))
 
 game = True
 fruit1.sum()
 while game:
     screen.fill((0,0,0))
-    time.sleep(0.05)
+    time.sleep(0.2)
 
 
     for x in snaketurn:
@@ -142,6 +148,12 @@ while game:
 
     screen.blit(eye1,(snakes[0].x + 3,snakes[0].y + 3.5))
     screen.blit(eye2,(snakes[0].x + 3,snakes[0].y + 1.5))
+    pblock.fill((255,255,255))
+    screen.blit(pblock,(0,100))
+    for i in range(140):
+        
+        pygame.draw.line(screen,(255,255,255) ,(0,0 + i * 50),(700,0 + i * 50),width=10)
+    
     fruit1.update()
 
     pygame.display.update()
