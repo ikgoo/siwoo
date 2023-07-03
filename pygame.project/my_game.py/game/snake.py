@@ -1,8 +1,26 @@
 import pygame
 import time
 import random
-import numpy as np
-import os
+from PIL import Image, ImageFilter
+
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import firestore
+
+# https://firebase.google.com/docs/firestore/query-data/get-data?hl=ko#python
+# https://firebase.google.com/docs/firestore/manage-data/add-data?hl=ko
+cred = credentials.Certificate("E:\siwoo2\pygame.project\my_game.py\game\siwoo-b39ff-firebase-admin.json")
+firebase_admin.initialize_app(cred)
+db = firestore.client()
+
+
+# 값 가져오기
+gameRankDataObj = db.collection("game").document("ranking")     # 클라우드에서 가져오기
+gameRankData = gameRankDataObj.get().to_dict()                  # 가져온 데이터를 딕셔너리 형태로 변환
+
+# 저장
+gameRankData['siwoo'] =100
+gameRankDataObj.set(gameRankData)
 
 screen = pygame.display.set_mode((700,700))
 pygame.init()
@@ -24,7 +42,7 @@ snakerect = []
 class snakebod:
     def __init__(self,x,y,own):
         self.snakeb = pygame.Surface((25,25))
-        self.snakeb.fill((255,255,255))
+        self.snakeb.fill((color[colornum -1 ][1]))
         self.snakenum = 0
 
         self.x = x
@@ -130,7 +148,7 @@ class fruit:
 
 
 
-    
+
     def update(self):
         screen.blit(self.hitbox,(self.x - 2.5,self.y-2.5))
         self.cir = pygame.draw.circle(screen,(255,255,255),(self.x,self.y),7.5)
@@ -163,10 +181,9 @@ pblock = pygame.Surface((700,10))
 fruit1 = fruit()
 snakes = []
 
-for s in range(1,4):
-    snakes.append(snakebod(350 - s * 25 + 1,350+1,s))
 
 
+msnaketurn = []
 eye1 = pygame.Surface((10,10))
 eye2 = pygame.Surface((10,10))
 cene = 0
@@ -174,170 +191,337 @@ game = True
 fruit1.sum()
 menu = True
 msnakes = []
-# while menu:
-#     screen.fill((255,255,255))
-    
-#     snake_game = font.render("SNAKE GAME",True,(0,0,0))
-#     screen.blit(snake_game,(150,200))
-#     for s in range(1,4):
-#         msnakes.append(snakebod(350 - s * 25 + 1,350+1,s))
+on = True
+arrownum = 1
+fs = 1
+colornum = 0
+color = [["white",(255,255,255)],["Red",(255,0,0)],["Blue",(0,0,255)],["Green",(0,200,0)],["Black",(0,0,0)]]
 
-#     if cene == 4:
-#         msnakes[0].dir = "up"
-#     if cene == 7:
-#         msnakes[0].dir = "left"
-#     if cene == 
+while on:
+    fors = 0
+    font = pygame.font.Font(None, 80)
+    snaketurn = []
+    ch = 0
+    snakehitbox = pygame.draw.rect(screen,(255,255,255),(350,350,25,25))
+    clock = pygame.time.Clock()
+    dt = clock.tick(50)
+    snx = 350
+    sny = 350
+    getped = 0
+    snakerect = []
     
-#     for event in pygame.event.get():
-#         if event.type == pygame.QUIT:
-#             game = False
-#         if event.type == pygame.KEYDOWN:
-#             for i in [[pygame.K_UP,"down","up"],[pygame.K_DOWN,"up","down"],[pygame.K_LEFT,"right","left"],[pygame.K_RIGHT,"left","right"]]:
-#                 if event.key == i[0]:
-                
-#                     if snakes[0].dir != i[1]:
-#                         if snaketurn != []:
-#                             if snaketurn[0][0] == 0:
-#                                 break
-#                             else:
-#                                 snakes[0].dir = i[2]
-                            
-#                                 snaketurn.append([0,i[2]])
-#                         else:
-#                             snakes[0].dir = i[2]
-                        
-#                             snaketurn.append([0,i[2]])
-                        
+    pblock = pygame.Surface((700,10))
+    fruit1 = fruit()
+    snakes = []
 
-#     screen.blit(eye1,(snakes[0].x + 10,snakes[0].y + 5))
+
+
+    msnaketurn = []
+    eye1 = pygame.Surface((10,10))
+    eye2 = pygame.Surface((10,10))
+    cene = 0
+    game = True
+    fruit1.sum()
+    menu = True
+    msnakes = []
+    on = True
+    arrownum = 1
+    fs = 1
+    colornum = 0
+    color = [["white",(255,255,255)],["Red",(255,0,0)],["Blue",(0,0,255)],["Green",(0,200,0)],["Black",(0,0,0)]]
+    for s in range(1,4):
+        snakes.append(snakebod(350 - s * 25 + 1,350+1,s))
+    for s in range(1,4):
+        msnakes.append(snakebod(400 - s * 25 + 1,350+1,s))
+    while menu:
+
+
+
+        screen.fill((0,0,0))
+        pygame.draw.rect(screen,(100,200,0),(0,100,700,600))
+        for i in range(28):
+
+            line1  = pygame.draw.line(screen,(0,255,0) ,(0,100 + i * 25),(700,100 + i * 25),width=10)
+
+            line2 = pygame.draw.line(screen,(0,255,0) ,(0 + i * 25,100),(0 + i * 25,700),width=10)
+
+        pblock.fill((255,255,255))
+        screen.blit(pblock,(0,100))
+
+        time.sleep(0.5)
+        
+
+
+
+
+
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                game = False
+            if event.type == pygame.KEYDOWN:
+
+                if event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
+                    menu = False
+                    game = True
+
+                if event.key == pygame.K_t:
+
+
+
+                    seting = True
+                    while seting:
+                        screen.fill((255,255,255))
+
+                        speed = ["fast","normal","slow"]
+
+                        arrow = font.render(">",True,(0,0,0))
+
+
+                        modesp = font.render("speed : " + speed[fs],True,(0,200,0))
+                        mode = font.render("press arrow to next",True,(0,0,200))
+                        mode2 = font.render("press space to change modes",True,(0,0,200))
+                        setingt = font.render("setting",True,(128,128,128))
+                        esc = font.render("press esc to out",True,(200,0,0))
+                        for a in color:
+
+                            if colornum == color.index(a):
+                                modesnc = font.render("snake color : " + a[0],True,(0,200,0))
+                        mode = pygame.transform.scale(mode,(300,70))
+                        setingt = pygame.transform.scale(setingt,(250,70))
+                        modesp = pygame.transform.scale(modesp,(250,70))
+                        arrow = pygame.transform.scale(arrow,(50,50))
+                        modesnc = pygame.transform.scale(modesnc,(280,70))
+                        mode2 = pygame.transform.scale(mode2,(400,70))
+                        esc = pygame.transform.scale(esc,(280,70))
+                        for event in pygame.event.get():
+                            if event.type == pygame.KEYDOWN:
+                                if event.key == pygame.K_UP:
+                                    arrownum = 1
+                                if event.key == pygame.K_DOWN:
+                                    arrownum = 2
+                                if event.key == pygame.K_SPACE:
+                                    if arrownum == 1:
+                                        if fs != 2:
+                                            fs += 1
+                                        else:
+                                            fs = 0
+                                    else:
+                                        if colornum != 4:
+                                            colornum += 1
+                                        else:
+                                            colornum = 0
+                                if event.key == pygame.K_ESCAPE:
+                                    seting = False
+                                    for i in snakes:
+                                        i.snakeb.fill((color[colornum - 1][1]))
+                        screen.blit(mode,(350 - 150,200))
+
+                        screen.blit(arrow,(350 - 200,300 + 100 * (arrownum - 1)))
+                        
+                        screen.blit(modesp,(350 - 125,300))
+                        screen.blit(setingt,(350 -125,50))
+                        screen.blit(modesnc,(350 -125,400))
+                        screen.blit(mode2,(350-200,120))
+                        screen.blit(esc,(350 - 140,600))
+                        pygame.display.update()
 
         
-    
-def died():
-    global game
-    global sr
-    global screen
-    for z in snakes:
-        
-        if snakes[0] .x <= 0 or snakes[0].x >= 700 or snakes[0].y <= 100 or snakes[0].y >= 700 or (snakes[0].x == z.x and z != snakes[0] and snakes[0].y == z.y):
-            time.sleep(1.5)
+        for x in msnakes:
 
-            timer = time.time()
+            x.update()
+        pygame.display.update()
+        msnake = pygame.Surface((75,25))
+        msnake.fill((255,255,255))
+        screen.blit(msnake,(323,347))
+        snake_game = font.render("SNAKE GAME",True,(0,0,0))
+        enter = font.render("press enter to start",True,(255,255,255))
+        enter = pygame.transform.scale(enter,(250,50))
+        set = font.render("press t to setting",True,(255,255,255))
+        set = pygame.transform.scale(set,(250,50))
+        screen.blit(enter,(350 - 125,450))
+        screen.blit(snake_game,(150,200))
+        screen.blit(set,(350 - 125,500))
+        screen.blit(eye2,(325 + 10,350 + 5))
+        pygame.display.update()
+        
+        pygame.display.update()
+
             
-            while True:
+    key = 0
+    def died():
+        global game
+        global sr
+        global screen
+        global menu
+        for z in snakes:
+            
+            if snakes[0] .x <= 0 or snakes[0].x >= 700 or snakes[0].y <= 100 or snakes[0].y >= 700 or (snakes[0].x == z.x and z != snakes[0] and snakes[0].y == z.y):
+                time.sleep(1.5)
+
+                timer = time.time()
                 
-                pygame.draw.rect(screen,(100,200,0),(0,100,700,600))
-                for i in range(28):
-	        
-                    pygame.draw.line(screen,(0,255,0) ,(0,100 + i * 25),(700,100 + i * 25),width=10)
-                    pygame.draw.line(screen,(0,255,0) ,(0 + i * 25,100),(0 + i * 25,700),width=10)
-                pblock.fill((255,255,255))
-                screen.blit(pblock,(0,100))
-                for c in snakes:
-                    c.update()
+                while True:
+                    
+                    pygame.draw.rect(screen,(100,200,0),(0,100,700,600))
+                    for i in range(28):
                 
-                chk = False
-                for x in snakes:
-                    if x.y <= 700:
-                        chk = True
+                        pygame.draw.line(screen,(0,255,0) ,(0,100 + i * 25),(700,100 + i * 25),width=10)
+                        pygame.draw.line(screen,(0,255,0) ,(0 + i * 25,100),(0 + i * 25,700),width=10)
+                    pblock.fill((255,255,255))
+                    screen.blit(pblock,(0,100))
+                    for c in snakes:
+                        c.update()
+                    
+                    chk = False
+                    for x in snakes:
+                        if x.y <= 700:
+                            chk = True
+                            break
+                    if chk == False:
                         break
-                if chk == False:
+                        
+                    end_t = time.time()
+                    
+                    for index, x in enumerate(snakes):
+                        if index != 0:
+
+                            if end_t - timer < (0.2 * index):
+                                continue
+                        
+                        if x.x >= 701:
+                            x.x = 675
+                        if x.x <= 0:
+                            x.x = 0
+                        x.y += x.fall
+                        x.fall += round(0.002,4)
+                        x.update()
+                        if index == 0:
+                            screen.blit(eye1,(snakes[0].x + 10,snakes[0].y+5))
+                        pygame.display.update()
+                while True:
+                    rankok = font.render("Do you want to put your score on the ranking?",True,(0,0,0))
+                    ox = font.render("o       x",True,(0,0,0))
+                    arr = font.render(" /\ ",True,(0,0,0))
+                    arrw = 1
+                    done = False
+                    pygame.display.update()
+                    name = ""
+                    
+                    if arrw == 1:
+                        while True:
+                            screen.fill((255,255,255))
+                            namet = font.render(name,True,(0,0,0))
+                            inp = font.render("put your name",True,(0,0,0))
+                            inp = pygame.transform.scale(inp,(280,70))
+                            pygame.display.update()
+                            for event in pygame.event.get():
+                                if event.type == pygame.QUIT:
+                                    running = False
+                                elif event.type == pygame.KEYDOWN:
+                                    if event.key == pygame.K_RETURN:
+                                        # 엔터 키를 눌렀을 때 입력 종료
+                                        done = True
+                                        break
+                                    elif event.key == pygame.K_BACKSPACE:
+                                        # 백스페이스 키를 눌렀을 때 마지막 글자 삭제
+                                        name = name[:-1]
+                                    else:
+                                        # 다른 키를 눌렀을 때 입력에 추가
+                                        name += event.unicode
+                            screen.blit(namet,(0,600))
+                            
+                            screen.blit(inp,(350-140,200))
+                            pygame.display.update()
+                            if done == True:
+
+                                gameRankData['siwoo'] =100
+                                gameRankDataObj.set(gameRankData)
+
+                                gameRankDataObj.set({name:fruit1.point})
+                    game = False
+                    menu = True
                     break
-                    
-                end_t = time.time()
+                # gameover = pygame.font.render("game over", True, (255,0,50))
+        
+        # pygame.display.update()
+
+    while game:
+        
+        time.sleep(0.08 *(fs + 1))
+        hitbox()
+
+        screen.fill((0,0,0))
+        
+
+
+        for x in snaketurn:
+            x[0] += 1
+            for i in snakes:
                 
-                for index, x in enumerate(snakes):
-                    if index != 0:
+                i.update()
+                
+                if i.ownnum == x[0]:
+                    i.dir = x[1]
+        sr = snakes[0].snakeb.get_rect()
+        sr.left = snakes[0].x
+        sr.top= snakes[0].y
+        for u in snakes:
+            snakerect.append(u.snakeb.get_rect())
+            snakerect[-1].left = u.x
+            snakerect[-1].top = u.y
+                
+        if fruit1.getp():
+            getped =1
+            fruit1.sum()
+        pygame.draw.rect(screen,(100,200,0),(0,100,700,600))
 
-                        if end_t - timer < (0.2 * index):
-                            continue
-                    
-                    if x.x >= 701:
-                        x.x = 675
-                    if x.x <= 0:
-                        x.x = 0
-                    x.y += x.fall
-                    x.fall += round(0.001,4)
-                    x.update()
-                    if index == 0:
-                        screen.blit(eye1,(snakes[0].x + 10,snakes[0].y+5))
+        for i in range(28):
+            pygame.draw.line(screen,(0,255,0) ,(0,100 + i * 25),(700,100 + i * 25),width=10)
+            pygame.draw.line(screen,(0,255,0) ,(0 + i * 25,100),(0 + i * 25,700),width=10)
 
-            game = False
-            break
-            # gameover = pygame.font.render("game over", True, (255,0,50))
-    
-    # pygame.display.update()
-
-while game:
-    time.sleep(0.1)
-    hitbox()
-
-    screen.fill((0,0,0))
-    
-
-
-    for x in snaketurn:
-        x[0] += 1
         for i in snakes:
-            
+            i.snakeb.fill(color[colornum][1])
+            if getped == 0:
+                if key == 1:
+                    i.go()
+                    i.update()
+                i.update()
             i.update()
-            
-            if i.ownnum == x[0]:
-                i.dir = x[1]
-    sr = snakes[0].snakeb.get_rect()
-    sr.left = snakes[0].x
-    sr.top= snakes[0].y
-    for u in snakes:
-        snakerect.append(u.snakeb.get_rect())
-        snakerect[-1].left = u.x
-        snakerect[-1].top = u.y
-            
-    if fruit1.getp():
-        getped =1
-        fruit1.sum()
-    pygame.draw.rect(screen,(100,200,0),(0,100,700,600))
-
-    for i in range(28):
-        pygame.draw.line(screen,(0,255,0) ,(0,100 + i * 25),(700,100 + i * 25),width=10)
-        pygame.draw.line(screen,(0,255,0) ,(0 + i * 25,100),(0 + i * 25,700),width=10)
-
-    for i in snakes:
-        if getped == 0:
-            i.go()
-        i.update()
-    
-    if getped == 1:
-        getped = 0
-     
-     
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            game = False
-        if event.type == pygame.KEYDOWN:
-            for i in [[pygame.K_UP,"down","up"],[pygame.K_DOWN,"up","down"],[pygame.K_LEFT,"right","left"],[pygame.K_RIGHT,"left","right"]]:
-                if event.key == i[0]:
-                
-                    if snakes[0].dir != i[1]:
-                        if snaketurn != []:
-                            if snaketurn[0][0] == 0:
-                                break
+        
+        if getped == 1:
+            getped = 0
+        
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                game = False
+            if event.type == pygame.KEYDOWN:
+                key = 1
+                for i in [[pygame.K_UP,"down","up"],[pygame.K_DOWN,"up","down"],[pygame.K_LEFT,"right","left"],[pygame.K_RIGHT,"left","right"]]:
+                    if event.key == i[0]:
+                    
+                        if snakes[0].dir != i[1]:
+                            if snaketurn != []:
+                                if snaketurn[0][0] == 0:
+                                    break
+                                else:   
+                                    snakes[0].dir = i[2]
+                                
+                                    snaketurn.append([0,i[2]])
                             else:
                                 snakes[0].dir = i[2]
                             
                                 snaketurn.append([0,i[2]])
-                        else:
-                            snakes[0].dir = i[2]
-                        
-                            snaketurn.append([0,i[2]])
-                        
+                            
 
-    screen.blit(eye1,(snakes[0].x + 10,snakes[0].y + 5))
+        screen.blit(eye1,(snakes[0].x + 10,snakes[0].y + 5))
 
-    pblock.fill((255,255,255))
-    screen.blit(pblock,(0,100))
+        pblock.fill((255,255,255))
+        screen.blit(pblock,(0,100))
 
 
-    fruit1.update()
-    died()
-    pygame.display.update()
+        fruit1.update()
+        died()
+        pygame.display.update()
 
