@@ -14,12 +14,12 @@ firebase_admin.initialize_app(cred)
 db = firestore.client()
 
 
-# 값 가져오기
-gameRankDataObj = db.collection("game").document("ranking")     # 클라우드에서 가져오기
-gameRankData = gameRankDataObj.get().to_dict()                  # 가져온 데이터를 딕셔너리 형태로 변환
 
-# 저장
-gameRankData['siwoo'] =100
+gameRankDataObj = db.collection("game").document("ranking")    
+gameRankData = gameRankDataObj.get().to_dict()                 
+
+
+
 gameRankDataObj.set(gameRankData)
 
 screen = pygame.display.set_mode((700,700))
@@ -260,6 +260,34 @@ while on:
             if event.type == pygame.QUIT:
                 game = False
             if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_r:
+                    rankf = []
+                    print(gameRankData)
+
+                    sorted_data = sorted(gameRankData.items(), key=lambda x: x[1], reverse=True)
+
+
+                    ranked_data = []
+                    for i, (key, value) in enumerate(sorted_data):
+                        ranked_data.append({"이름": key, "점수": value, "랭킹": i+1})
+
+
+                    for person in ranked_data:
+                        rankf.append(font.render(f"{person['랭킹']}: {person['이름']} {person['점수']}point",True,(255,255,255)))
+
+                    for i in rankf:
+                        i = pygame.transform.scale(i,(280,50))
+                    while True:
+                        ford = 0
+                        for i in rankf:
+                            screen.blit(i,(0,100+ford * 50))
+                            ford += 1
+                        pygame.display.update()
+
+                        
+
+
+                        
 
                 if event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
                     menu = False
@@ -338,8 +366,11 @@ while on:
         enter = font.render("press enter to start",True,(255,255,255))
         enter = pygame.transform.scale(enter,(250,50))
         set = font.render("press t to setting",True,(255,255,255))
+        rank = font.render("press r to ranking",True,(255,255,255))
         set = pygame.transform.scale(set,(250,50))
+        rank = pygame.transform.scale(rank,(250,50))
         screen.blit(enter,(350 - 125,450))
+        screen.blit(rank,(350-125,550))
         screen.blit(snake_game,(150,200))
         screen.blit(set,(350 - 125,500))
         screen.blit(eye2,(325 + 10,350 + 5))
@@ -399,52 +430,91 @@ while on:
                         if index == 0:
                             screen.blit(eye1,(snakes[0].x + 10,snakes[0].y+5))
                         pygame.display.update()
-                while True:
+                        done1 = False
+                arrw = 1
+                rank = True
+                while rank:
                     rankok = font.render("Do you want to put your score on the ranking?",True,(0,0,0))
+                    screen.fill((255,255,255))
                     ox = font.render("o       x",True,(0,0,0))
                     arr = font.render(" /\ ",True,(0,0,0))
-                    arrw = 1
-                    done = False
-                    pygame.display.update()
-                    name = ""
+                    arr = pygame.transform.scale(arr,(80,100))
+                    ox = pygame.transform.scale(ox,(400,70))
+                    rankok = pygame.transform.scale(rankok,(700,70))
                     
+                    done = False
+                    screen.blit(ox,(350 - 200,300))
+                    screen.blit(rankok,(0,100))
                     if arrw == 1:
-                        while True:
-                            screen.fill((255,255,255))
-                            namet = font.render(name,True,(0,0,0))
-                            inp = font.render("put your name",True,(0,0,0))
-                            inp = pygame.transform.scale(inp,(280,70))
-                            pygame.display.update()
-                            for event in pygame.event.get():
-                                if event.type == pygame.QUIT:
-                                    running = False
-                                elif event.type == pygame.KEYDOWN:
-                                    if event.key == pygame.K_RETURN:
-                                        # 엔터 키를 눌렀을 때 입력 종료
-                                        done = True
-                                        break
-                                    elif event.key == pygame.K_BACKSPACE:
-                                        # 백스페이스 키를 눌렀을 때 마지막 글자 삭제
-                                        name = name[:-1]
-                                    else:
-                                        # 다른 키를 눌렀을 때 입력에 추가
-                                        name += event.unicode
-                            screen.blit(namet,(0,600))
+                        screen.blit(arr,(150 + 15.5 - 10,450))
+                    elif arrw == 2:
+                        screen.blit(arr,(450 + 15.5 - 10,450))
+
+                    
+                    
+                    name = ""
+                    pygame.display.update()
+                    for event in pygame.event.get():
+                        if event.type == pygame.KEYDOWN:
+                            if event.key == pygame.K_LEFT:
+                                arrw = 1
+                            if event.key == pygame.K_RIGHT:
+                                arrw = 2
+                            if event.key == pygame.K_SPACE:
+                                if arrw == 2:
+                                    rank = False
+                                if arrw == 1:
+                                
+                                    rankT = True
+                                    while rankT:
+
+                                        screen.fill((255,255,255))
+                                        namet = font.render(name,True,(0,0,0))
+                                        inp = font.render("put your name",True,(0,0,0))
+                                        inp = pygame.transform.scale(inp,(280,70))
+                                        
+
+
+
+
+                                        for event in pygame.event.get():
+                                            if event.type == pygame.QUIT:
+                                                running = False
+                                            elif event.type == pygame.KEYDOWN:
+                                                if event.key == pygame.K_RETURN:
+
+                                                    done = True
+                                                    break
+                                                elif event.key == pygame.K_BACKSPACE:
+
+                                                    name = name[:-1]
+                                                else:
+
+                                                    name += event.unicode
+                                        screen.blit(namet,(0,600))
+                                        
+                                        screen.blit(inp,(350-140,200))
+                                        pygame.display.update()
+                                        if done == True:
+
+                                            gameRankData[name] =fruit1.point
+                                            gameRankDataObj.set(gameRankData)
+                                            if len(gameRankData) >= 11:
+                                                ranked_data.pop(10)
+
+                                            done1 = True
+                                        
+                                        if done1 == True:
+                                            rankT = False
+                                            rank = False
+                                game = False
+                                menu = True
+
+                                break
+                            # gameover = pygame.font.render("game over", True, (255,0,50))
+                    
+                    # pygame.display.update()
                             
-                            screen.blit(inp,(350-140,200))
-                            pygame.display.update()
-                            if done == True:
-
-                                gameRankData['siwoo'] =100
-                                gameRankDataObj.set(gameRankData)
-
-                                gameRankDataObj.set({name:fruit1.point})
-                    game = False
-                    menu = True
-                    break
-                # gameover = pygame.font.render("game over", True, (255,0,50))
-        
-        # pygame.display.update()
 
     while game:
         
