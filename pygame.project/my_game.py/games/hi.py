@@ -27,7 +27,8 @@
 
 
 
-
+for i in range(6):
+    print(i)
 
 
 
@@ -316,9 +317,7 @@
 # if __name__ == '__main__':
 #     run_client()
 
-l = []
-for i in range(5):
-    l.append(i)
-
-print(l)
-l[2].pos
+# l = {"r" : 1,"x":2}
+# print(l[0])
+i = {1:2,4:5}
+i[1].value()
