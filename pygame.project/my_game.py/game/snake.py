@@ -282,6 +282,7 @@ while on:
                         for i in rankf:
                             screen.blit(i,(0,100+ford * 50))
                             ford += 1
+                        for u in 
                         pygame.display.update()
 
                         
