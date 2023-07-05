@@ -1,7 +1,7 @@
 import pygame
 import time
 import random
-from PIL import Image, ImageFilter
+
 
 import firebase_admin
 from firebase_admin import credentials
@@ -9,8 +9,10 @@ from firebase_admin import firestore
 
 # https://firebase.google.com/docs/firestore/query-data/get-data?hl=ko#python
 # https://firebase.google.com/docs/firestore/manage-data/add-data?hl=ko
-cred = credentials.Certificate("E:\siwoo2\pygame.project\my_game.py\game\siwoo-b39ff-firebase-admin.json")
+cred = credentials.Certificate("siwoo-b39ff-firebase-admin.json")
 firebase_admin.initialize_app(cred)
+
+moveCurrTime = 0
 db = firestore.client()
 
 
@@ -114,9 +116,9 @@ class fruit:
             for c in snakes:
                 c.ownnum = c.ownnum + 1
             if snakes[0].dir == "up":
-                snakes.insert(0,snakebod(snx,sny,1))
+                snakes.insert(0,snakebod(snx,snakes[1].y-25,1))
             elif snakes[0].dir == "down":
-                snakes.insert(0,snakebod(snx,sny,1))
+                snakes.insert(0,snakebod(snx,snakes[1].y-25,1))
             elif snakes[0].dir == "left":
                 snakes.insert(0,snakebod(snx,sny,1))
             elif snakes[0].dir == "right":
@@ -264,25 +266,30 @@ while on:
                     rankf = []
                     print(gameRankData)
 
-                    sorted_data = sorted(gameRankData.items(), key=lambda x: x[1], reverse=True)
+                    sortedv = sorted(gameRankData.items(), key=lambda x: x[1], reverse=True)
 
 
-                    ranked_data = []
-                    for i, (key, value) in enumerate(sorted_data):
-                        ranked_data.append({"이름": key, "점수": value, "랭킹": i+1})
+                    ranked = []
+                    for i, (key, value) in enumerate(sortedv):
+                        ranked.append({"이름": key, "점수": value, "랭킹": i+1})
 
 
-                    for person in ranked_data:
+                    for person in ranked:
                         rankf.append(font.render(f"{person['랭킹']}: {person['이름']} {person['점수']}point",True,(255,255,255)))
 
                     for i in rankf:
                         i = pygame.transform.scale(i,(280,50))
-                    while True:
+                    rankingT = True
+                    while rankingT:
                         ford = 0
                         for i in rankf:
                             screen.blit(i,(0,100+ford * 50))
                             ford += 1
-                        for u in 
+                        for event in pygame.event.get():
+                            if event.type == pygame.KEYDOWN:
+                                if event.key == pygame.K_ESCAPE:
+                                    rankingT = False
+                                    
                         pygame.display.update()
 
                         
@@ -501,7 +508,7 @@ while on:
                                             gameRankData[name] =fruit1.point
                                             gameRankDataObj.set(gameRankData)
                                             if len(gameRankData) >= 11:
-                                                ranked_data.pop(10)
+                                                ranked.pop(10)
 
                                             done1 = True
                                         
@@ -516,18 +523,23 @@ while on:
                     
                     # pygame.display.update()
                             
-
+    previous_time = 0
     while game:
+        current_time = time.time()
+        delta_time = current_time - previous_time
+        previous_time = current_time
+        moveCurrTime += delta_time
         
-        time.sleep(0.08 *(fs + 1))
-        hitbox()
+
+
 
         screen.fill((0,0,0))
         
 
 
         for x in snaketurn:
-            x[0] += 1
+            if moveCurrTime >= 0.1:
+                x[0] += 1
             for i in snakes:
                 
                 i.update()
@@ -542,9 +554,7 @@ while on:
             snakerect[-1].left = u.x
             snakerect[-1].top = u.y
                 
-        if fruit1.getp():
-            getped =1
-            fruit1.sum()
+
         pygame.draw.rect(screen,(100,200,0),(0,100,700,600))
 
         for i in range(28):
@@ -555,10 +565,14 @@ while on:
             i.snakeb.fill(color[colornum][1])
             if getped == 0:
                 if key == 1:
-                    i.go()
+                    if moveCurrTime >= 0.1:
+                        i.go()
+                        
                     i.update()
                 i.update()
             i.update()
+        if moveCurrTime >= 0.1:
+            moveCurrTime = 0
         
         if getped == 1:
             getped = 0
@@ -594,5 +608,9 @@ while on:
 
         fruit1.update()
         died()
+        hitbox()
+        if fruit1.getp():
+            getped =1
+            fruit1.sum()
         pygame.display.update()
-
+        
