@@ -107,6 +107,8 @@ class fruit:
         
     
     def getp(self):
+        global snx
+        global sny
         hibr = self.hitbox.get_rect()
         hibr.left = self.x - 2.5
         hibr.top = self.y-2.5
@@ -116,13 +118,13 @@ class fruit:
             for c in snakes:
                 c.ownnum = c.ownnum + 1
             if snakes[0].dir == "up":
-                snakes.insert(0,snakebod(snx,snakes[1].y-25,1))
+                snakes.insert(0,snakebod(snakes[0].x,snakes[0].y - 25,1))
             elif snakes[0].dir == "down":
-                snakes.insert(0,snakebod(snx,snakes[1].y-25,1))
+                snakes.insert(0,snakebod(snakes[0].x,snakes[0].y + 25,1))
             elif snakes[0].dir == "left":
-                snakes.insert(0,snakebod(snx,sny,1))
+                snakes.insert(0,snakebod(snakes[0].x - 25,snakes[0].y,1))
             elif snakes[0].dir == "right":
-                snakes.insert(0,snakebod(snx,sny,1))
+                snakes.insert(0,snakebod(snakes[0].x + 25,snakes[0].y,1))
             snakes[0].dir = snakes[1].dir
             return True
         return False
@@ -529,7 +531,7 @@ while on:
         delta_time = current_time - previous_time
         previous_time = current_time
         moveCurrTime += delta_time
-        
+        hitbox()
 
 
 
@@ -565,17 +567,29 @@ while on:
             i.snakeb.fill(color[colornum][1])
             if getped == 0:
                 if key == 1:
-                    if moveCurrTime >= 0.1:
-                        i.go()
+                    if fs == 0:
+                        if moveCurrTime >= 0.09:
+                            if getped == 0:
+                                i.go()
+                    else:
+                        if moveCurrTime >= fs / 10:
+                            if getped == 0:
+                                i.go()
+                            
                         
                     i.update()
                 i.update()
             i.update()
-        if moveCurrTime >= 0.1:
-            moveCurrTime = 0
-        
-        if getped == 1:
+        if fs == 0:
+            
+            if moveCurrTime >= 0.09:
+                moveCurrTime = 0
+            else:
+                if moveCurrTime >= fs / 10:
+                    moveCurrTime = 0
             getped = 0
+        
+
         
         
         for event in pygame.event.get():
@@ -607,8 +621,9 @@ while on:
 
 
         fruit1.update()
+
         died()
-        hitbox()
+
         if fruit1.getp():
             getped =1
             fruit1.sum()
