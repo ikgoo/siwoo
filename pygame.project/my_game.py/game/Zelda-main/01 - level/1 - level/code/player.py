@@ -4,7 +4,7 @@ from settings import *
 class Player(pygame.sprite.Sprite):
     def __init__(self,pos,groups,obstacle_spr):
         super().__init__(groups)
-        self.image = pygame.image.load('.\\pygame.project\\my_game.py\\game\\Zelda-main\\01 - level\\1 - level\\graphics\\test\\player.png').convert_alpha()
+        self.image = pygame.image.load('..\\graphics\\test\\player.png').convert_alpha()
         self.rect = self.image.get_rect(topleft = pos)
         self.hitbox = self.rect.inflate(0,-26)
 
@@ -16,18 +16,18 @@ class Player(pygame.sprite.Sprite):
         keys = pygame.key.get_pressed()
   
 
-        if keys[pygame.K_DOWN]:
+        if keys[pygame.K_s]:
             self.dir.y = 1
    
-        elif keys[pygame.K_UP]:
+        elif keys[pygame.K_w]:
             self.dir.y = -1
         else:
             self.dir.y = 0
    
-        if keys[pygame.K_LEFT]:
+        if keys[pygame.K_a]:
             self.dir.x = -1
    
-        elif keys[pygame.K_RIGHT]:
+        elif keys[pygame.K_d]:
             self.dir.x = 1
         else:
             self.dir.x = 0

@@ -3,7 +3,11 @@ from settings import *
 from tile import Tile
 from player import Player
 from debug import debug
-from support import import_csv_layout
+from support import import_csv_layout,import_folder
+from random import choice
+
+
+
 class Level:
 	def __init__(self):
 
@@ -20,19 +24,30 @@ class Level:
 
 	def create_map(self):
 		layouts = {
-			'boundary':import_csv_layout('.\\pygame.project\\my_game.py\\game\\Zelda-main\\01 - level\\1 - level\\map\\map_FloorBlocks.csv')
-		}
-
+			'boundary':import_csv_layout('..\\map\\map_FloorBlocks.csv'),
+			'grass': import_csv_layout('..\\map\\map_Grass.csv'),
+			'object': import_csv_layout('..\\map\\map_Details.csv')
   
+  
+  
+  		}
+		graphics =  {
+			'grass':import_folder('..\\graphics\\grass')
+		}
+		print(graphics)
 		for style,layout in layouts.items():
 			for row_index,row in enumerate(layout):
 				for col_index, col in enumerate(row):
-					if col == '395':
+					if col != '-1':
 						x = col_index * TILESIZE
 						y = row_index * TILESIZE
 						if style == 'boundary':
 							Tile((x,y),[self.obstacle_sprites],'invisible')
-							
+						if style == 'grass':
+							random_grass_image=choice(graphics['grass'])
+							Tile((x,y),[self.visible_sprites,self.obstacle_sprites],'grass',random_grass_image)
+						if style == 'object':
+							pass
 		# 		if col == 'x':
 		# 			Tile((x,y),[self.visible_sprites,self.obstacle_sprites])
 		# 		if col == 'p':
@@ -54,7 +69,7 @@ class YSortCameraGroup(pygame.sprite.Group):
         self.half_width = self.display_surface.get_size()[0] // 2
         self.half_height = self.display_surface.get_size()[1] // 2
         self.offset = pygame.math.Vector2()
-        self.floor_surf =pygame.image.load(".\\pygame.project\\my_game.py\\game\\Zelda-main\\01 - level\\1 - level\\graphics\\tilemap\\ground.png").convert()
+        self.floor_surf =pygame.image.load("..\\graphics\\tilemap\\ground.png").convert()
         self.floor_rect = self.floor_surf.get_rect(topleft = (0,0))
     
     def coustom_draw(self,player):
