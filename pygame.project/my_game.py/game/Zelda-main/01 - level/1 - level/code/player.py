@@ -31,7 +31,10 @@ class Player(pygame.sprite.Sprite):
             self.dir.x = 1
         else:
             self.dir.x = 0
-    
+        if keys[pygame.K_SPACE]:
+            print('attack')
+        if keys[pygame.K_LCTRL]:
+            print('magic')
     def move(self,speed):
         if self.dir.magnitude() != 0:
             self.dir = self.dir.normalize()
