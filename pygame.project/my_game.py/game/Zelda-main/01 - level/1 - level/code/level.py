@@ -5,7 +5,7 @@ from player import Player
 from debug import debug
 from support import import_csv_layout,import_folder
 from random import choice
-
+from weapon import weapon
 
 
 class Level:
@@ -21,6 +21,8 @@ class Level:
 		# sprite setup
 		self.create_map()
   
+	def create_Attack(self):
+		weapon(self.player,[self.visible_sprites])
 
 	def create_map(self):
 		layouts = {
@@ -51,13 +53,13 @@ class Level:
 							surf = graphics['objects'][int(col)]
 							Tile((x,y),[self.visible_sprites,self.obstacle_sprites],'object',surf)
 
-		self.player = Player((2000,1430),[self.visible_sprites],self.obstacle_sprites)
+		self.player = Player((2000,1430),[self.visible_sprites],self.obstacle_sprites,self.create_Attack)
 
 	def run(self):
 		# update and draw the game
 		self.visible_sprites.coustom_draw(self.player)
 		self.visible_sprites.update()
-		
+		debug(self.player.status)
   
 class YSortCameraGroup(pygame.sprite.Group):
     def __init__(self):
